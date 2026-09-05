@@ -5376,206 +5376,207 @@
   }
 
 
-  /* =========================================================
-     ROLE SELECTION
-  ========================================================== */
+ /* =========================================================
+   ROLE SELECTION
+========================================================== */
 
-  function selectRole(role) {
+function selectRole(role) {
 
-    selectedRole =
-      role;
-
-
-    document
-      .querySelectorAll(".role-card")
-      .forEach(card => {
-
-        card.classList.remove(
-          "border-blue-500",
-          "bg-blue-50",
-          "ring-2",
-          "ring-blue-100"
-        );
-
-      });
+  selectedRole =
+    role;
 
 
-    const selected =
-      document.getElementById(
-        "role-" + role
-      );
+  document
+    .querySelectorAll(".role-card")
+    .forEach(card => {
 
-
-    if (selected) {
-
-      selected.classList.add(
+      card.classList.remove(
         "border-blue-500",
         "bg-blue-50",
         "ring-2",
         "ring-blue-100"
       );
 
-    }
+    });
 
 
-    const username =
-      document.getElementById(
-        "loginUsername"
-      );
+  const selected =
+    document.getElementById(
+      "role-" + role
+    );
 
 
-    const password =
-      document.getElementById(
-        "loginPassword"
-      );
+  if (selected) {
+
+    selected.classList.add(
+      "border-blue-500",
+      "bg-blue-50",
+      "ring-2",
+      "ring-blue-100"
+    );
+
+  }
 
 
-    if (role === "customer") {
-
-      username.value =
-        "customer";
-
-    }
+  const username =
+    document.getElementById(
+      "loginUsername"
+    );
 
 
-    if (role === "service") {
-
-      username.value =
-        "service";
-
-    }
+  const password =
+    document.getElementById(
+      "loginPassword"
+    );
 
 
-    if (role === "admin") {
+  if (role === "customer") {
 
-      username.value =
-        "admin";
+    username.value =
+      "customer";
 
-    }
-
-
-    password.value =
-      "1234";
+  }
 
 
+  if (role === "service") {
+
+    username.value =
+      "service";
+
+  }
+
+
+  if (role === "admin") {
+
+    username.value =
+      "admin";
+
+  }
+
+
+  /* Password is no longer filled automatically */
+
+  password.value =
+    "";
+
+
+  document
+    .getElementById("loginError")
+    .classList
+    .add("hidden");
+
+}
+
+
+/* =========================================================
+   LOGIN FUNCTION
+========================================================== */
+
+function login() {
+
+  const user =
     document
-      .getElementById("loginError")
-      .classList
-      .add("hidden");
+      .getElementById("loginUsername")
+      .value
+      .trim();
+
+
+  const pass =
+    document
+      .getElementById("loginPassword")
+      .value
+      .trim();
+
+
+  const error =
+    document.getElementById(
+      "loginError"
+    );
+
+
+  const valid =
+
+    (
+      selectedRole === "customer" &&
+      user === "customer" &&
+      pass === "1234"
+    )
+
+    ||
+
+    (
+      selectedRole === "service" &&
+      user === "service" &&
+      pass === "1234"
+    )
+
+    ||
+
+    (
+      selectedRole === "admin" &&
+      user === "admin" &&
+      pass === "1234"
+    );
+
+
+  if (!valid) {
+
+    error.textContent =
+      document.documentElement.dir === "rtl"
+
+        ? "بيانات الدخول غير صحيحة للدور المحدد."
+
+        : "Invalid demo credentials for the selected role.";
+
+    error.classList.remove(
+      "hidden"
+    );
+
+    return;
 
   }
 
 
-  /* =========================================================
-     LOGIN FUNCTION
-  ========================================================== */
-
-  function login() {
-
-    const user =
-      document
-        .getElementById("loginUsername")
-        .value
-        .trim();
+  localStorage.setItem(
+    "saip_role",
+    selectedRole
+  );
 
 
-    const pass =
-      document
-        .getElementById("loginPassword")
-        .value
-        .trim();
+  localStorage.setItem(
+    "saip_logged_in",
+    "true"
+  );
 
 
-    const error =
-      document.getElementById(
-        "loginError"
-      );
+  if (
+    selectedRole === "customer"
+  ) {
 
-
-    const valid =
-
-      (
-        selectedRole === "customer" &&
-        user === "customer" &&
-        pass === "1234"
-      )
-
-      ||
-
-      (
-        selectedRole === "service" &&
-        user === "service" &&
-        pass === "1234"
-      )
-
-      ||
-
-      (
-        selectedRole === "admin" &&
-        user === "admin" &&
-        pass === "1234"
-      );
-
-
-    if (!valid) {
-
-      error.textContent =
-        document.documentElement.dir === "rtl"
-
-          ? "بيانات الدخول غير صحيحة للدور المحدد."
-
-          : "Invalid demo credentials for the selected role.";
-
-      error.classList.remove(
-        "hidden"
-      );
-
-      return;
-
-    }
-
-
-    localStorage.setItem(
-      "saip_role",
-      selectedRole
-    );
-
-
-    localStorage.setItem(
-      "saip_logged_in",
-      "true"
-    );
-
-
-    if (
-      selectedRole === "customer"
-    ) {
-
-      window.location.href =
-        "customer.html";
-
-    }
-
-    else if (
-      selectedRole === "service"
-    ) {
-
-      window.location.href =
-        "service-center.html";
-
-    }
-
-    else if (
-      selectedRole === "admin"
-    ) {
-
-      window.location.href =
-        "admin.html";
-
-    }
+    window.location.href =
+      "customer.html";
 
   }
 
+  else if (
+    selectedRole === "service"
+  ) {
+
+    window.location.href =
+      "service-center.html";
+
+  }
+
+  else if (
+    selectedRole === "admin"
+  ) {
+
+    window.location.href =
+      "admin.html";
+
+  }
+
+}
 
   /* =========================================================
      ESC
