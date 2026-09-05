@@ -1,0 +1,3849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>SAIP | Admin Intelligence Center</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0"
+    rel="stylesheet"
+  >
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#2563EB",
+            primaryDark: "#1D4ED8",
+            success: "#16A34A",
+            warning: "#D97706",
+            danger: "#DC2626",
+            ink: "#0F172A",
+            muted: "#64748B",
+            line: "#E2E8F0",
+            softBlue: "#EFF6FF",
+            softGreen: "#F0FDF4",
+            softAmber: "#FFFBEB",
+            softRed: "#FEF2F2"
+          },
+          fontFamily: {
+            inter: ["Inter", "sans-serif"],
+            space: ["Space Grotesk", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, sans-serif;
+      color: #0f172a;
+      background:
+        radial-gradient(
+          circle at 85% 5%,
+          rgba(37, 99, 235, 0.07),
+          transparent 24%
+        ),
+        radial-gradient(
+          circle at 15% 75%,
+          rgba(22, 163, 74, 0.05),
+          transparent 25%
+        ),
+        #f8fafc;
+    }
+
+    .font-space {
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    .grid-bg {
+      background-image:
+        linear-gradient(
+          rgba(148, 163, 184, 0.07) 1px,
+          transparent 1px
+        ),
+        linear-gradient(
+          90deg,
+          rgba(148, 163, 184, 0.07) 1px,
+          transparent 1px
+        );
+      background-size: 36px 36px;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 12px 35px rgba(15, 23, 42, 0.055);
+      backdrop-filter: blur(12px);
+    }
+
+    .sidebar {
+      width: 260px;
+      transition: transform 0.3s ease;
+    }
+
+    .main-area {
+      margin-left: 260px;
+    }
+
+    .nav-item {
+      transition: all 0.2s ease;
+    }
+
+    .nav-item:hover {
+      background: #f1f5f9;
+      color: #2563eb;
+    }
+
+    .nav-item.active {
+      background: #eff6ff;
+      color: #2563eb;
+      border-right: 3px solid #2563eb;
+    }
+
+    .metric-card {
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08);
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .pulse {
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.45;
+      }
+    }
+
+    .chart-bar {
+      transition: height 0.5s ease;
+    }
+
+    .table-row {
+      transition: background 0.2s ease;
+    }
+
+    .table-row:hover {
+      background: #f8fafc;
+    }
+
+    .modal-backdrop {
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal {
+      animation: modalIn 0.25s ease;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        z-index: 60;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main-area {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+
+<body class="grid-bg">
+
+  <!-- ========================================================= -->
+  <!-- DEMO BAR -->
+  <!-- ========================================================= -->
+
+  <div
+    class="fixed top-0 left-0 right-0 z-50 h-9 bg-white border-b border-slate-200 flex items-center justify-center text-xs font-semibold text-slate-600"
+  >
+    <span class="status-dot bg-green-500 mr-2 pulse"></span>
+
+    <span class="text-primary">
+      SAIP ADMIN INTELLIGENCE
+    </span>
+
+    <span class="mx-2 text-slate-300">
+      •
+    </span>
+
+    DEMO MODE
+
+    <span class="mx-2 text-slate-300">
+      •
+    </span>
+
+    SIMULATED SYSTEM DATA
+  </div>
+
+
+  <!-- ========================================================= -->
+  <!-- MOBILE OVERLAY -->
+  <!-- ========================================================= -->
+
+  <div
+    id="mobileOverlay"
+    class="hidden fixed inset-0 bg-slate-900/30 z-50 lg:hidden"
+    onclick="toggleSidebar()"
+  ></div>
+
+
+  <!-- ========================================================= -->
+  <!-- SIDEBAR -->
+  <!-- ========================================================= -->
+
+  <aside
+    id="sidebar"
+    class="sidebar fixed left-0 top-9 bottom-0 bg-white border-r border-slate-200 z-50 flex flex-col"
+  >
+
+    <!-- BRAND -->
+
+    <div class="px-6 py-6 border-b border-slate-100">
+
+      <div class="flex items-center gap-3">
+
+        <div
+          class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-blue-200"
+        >
+          <span class="material-symbols-outlined text-white text-2xl">
+            hub
+          </span>
+        </div>
+
+        <div>
+
+          <div
+            class="font-space font-bold text-xl text-ink tracking-tight"
+          >
+            SAIP
+          </div>
+
+          <div
+            class="text-[10px] uppercase tracking-widest text-slate-400 font-bold"
+          >
+            Admin Intelligence
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- NAVIGATION -->
+
+    <nav class="flex-1 px-3 py-5 space-y-1">
+
+      <div
+        class="px-3 mb-3 text-[10px] uppercase tracking-widest font-bold text-slate-400"
+      >
+        Intelligence
+      </div>
+
+
+      <button
+        class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold"
+        onclick="showSection('overview', this)"
+      >
+        <span class="material-symbols-outlined text-[21px]">
+          dashboard
+        </span>
+
+        Overview
+      </button>
+
+
+      <button
+        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold text-slate-600"
+        onclick="showSection('vehicles', this)"
+      >
+        <span class="material-symbols-outlined text-[21px]">
+          directions_car
+        </span>
+
+        Vehicles
+
+        <span
+          class="ml-auto text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full"
+        >
+          1.4K
+        </span>
+      </button>
+
+
+      <button
+        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold text-slate-600"
+        onclick="showSection('ai', this)"
+      >
+        <span class="material-symbols-outlined text-[21px]">
+          psychology
+        </span>
+
+        AutoCare AI
+
+        <span
+          class="ml-auto text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full"
+        >
+          37
+        </span>
+      </button>
+
+
+      <button
+        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold text-slate-600"
+        onclick="showSection('serviceCenters', this)"
+      >
+        <span class="material-symbols-outlined text-[21px]">
+          build
+        </span>
+
+        Service Centers
+
+        <span
+          class="ml-auto text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full"
+        >
+          24
+        </span>
+      </button>
+
+
+      <button
+        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold text-slate-600"
+        onclick="showSection('workorders', this)"
+      >
+        <span class="material-symbols-outlined text-[21px]">
+          assignment
+        </span>
+
+        Work Orders
+
+        <span
+          class="ml-auto text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full"
+        >
+          126
+        </span>
+      </button>
+
+
+      <div
+        class="px-3 pt-6 mb-3 text-[10px] uppercase tracking-widest font-bold text-slate-400"
+      >
+        Management
+      </div>
+
+
+      <button
+        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold text-slate-600"
+        onclick="showSection('analytics', this)"
+      >
+        <span class="material-symbols-outlined text-[21px]">
+          monitoring
+        </span>
+
+        Analytics
+      </button>
+
+
+      <button
+        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold text-slate-600"
+        onclick="showSection('users', this)"
+      >
+        <span class="material-symbols-outlined text-[21px]">
+          manage_accounts
+        </span>
+
+        Users & Roles
+      </button>
+
+
+      <button
+        class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold text-slate-600"
+        onclick="showSection('system', this)"
+      >
+        <span class="material-symbols-outlined text-[21px]">
+          settings
+        </span>
+
+        System Monitor
+      </button>
+
+    </nav>
+
+
+    <!-- SYSTEM STATUS -->
+
+    <div
+      class="mx-4 mb-4 p-4 rounded-xl bg-green-50 border border-green-100"
+    >
+
+      <div class="flex items-center gap-2 mb-2">
+
+        <span class="status-dot bg-green-500 pulse"></span>
+
+        <span class="text-xs font-bold text-green-700">
+          PLATFORM ONLINE
+        </span>
+
+      </div>
+
+      <div class="text-xs text-slate-500">
+        SAIP Intelligence Core
+      </div>
+
+    </div>
+
+
+    <!-- USER -->
+
+    <div class="p-4 border-t border-slate-100">
+
+      <div class="flex items-center gap-3">
+
+        <div
+          class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-primary font-bold"
+        >
+          AD
+        </div>
+
+        <div class="min-w-0 flex-1">
+
+          <div class="text-sm font-bold truncate">
+            SAIP Administrator
+          </div>
+
+          <div
+            class="text-[10px] text-slate-400 uppercase tracking-wider"
+          >
+            SYSTEM ADMIN
+          </div>
+
+        </div>
+
+        <button
+          onclick="logout()"
+          title="Logout"
+          class="text-slate-400 hover:text-red-500 transition"
+        >
+          <span class="material-symbols-outlined">
+            logout
+          </span>
+        </button>
+
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <!-- ========================================================= -->
+  <!-- MAIN -->
+  <!-- ========================================================= -->
+
+  <main class="main-area min-h-screen pt-9">
+
+
+    <!-- HEADER -->
+
+    <header
+      class="sticky top-9 z-40 bg-white/90 backdrop-blur-xl border-b border-slate-200"
+    >
+
+      <div
+        class="px-5 md:px-8 py-4 flex items-center justify-between"
+      >
+
+        <div class="flex items-center gap-4">
+
+          <button
+            onclick="toggleSidebar()"
+            class="lg:hidden w-10 h-10 rounded-lg border border-slate-200 flex items-center justify-center"
+          >
+            <span class="material-symbols-outlined">
+              menu
+            </span>
+          </button>
+
+
+          <div>
+
+            <div
+              class="text-[10px] uppercase tracking-widest font-bold text-slate-400"
+            >
+              SATURDAY · SEPTEMBER 05
+            </div>
+
+            <h1
+              class="font-space text-xl md:text-2xl font-bold text-ink"
+            >
+              SAIP Intelligence Command
+            </h1>
+
+          </div>
+
+        </div>
+
+
+        <div class="flex items-center gap-3">
+
+          <div
+            class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-full bg-green-50 border border-green-100"
+          >
+
+            <span class="status-dot bg-green-500"></span>
+
+            <span class="text-xs font-semibold text-green-700">
+              SYSTEM ONLINE
+            </span>
+
+          </div>
+
+
+          <button
+            onclick="showSection('ai')"
+            class="relative w-10 h-10 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 flex items-center justify-center"
+          >
+
+            <span class="material-symbols-outlined text-slate-600">
+              notifications
+            </span>
+
+            <span
+              class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] rounded-full flex items-center justify-center font-bold"
+            >
+              3
+            </span>
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- ========================================================= -->
+    <!-- CONTENT -->
+    <!-- ========================================================= -->
+
+    <div class="p-5 md:p-8 max-w-[1600px] mx-auto">
+
+
+      <!-- ======================================================= -->
+      <!-- OVERVIEW -->
+      <!-- ======================================================= -->
+
+      <section id="overview" class="section active">
+
+        <div class="mb-7">
+
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-primary text-[10px] font-bold uppercase tracking-wider mb-3"
+          >
+
+            <span class="material-symbols-outlined text-sm">
+              hub
+            </span>
+
+            Platform Intelligence
+          </div>
+
+
+          <h2 class="font-space text-3xl font-bold">
+            See the entire SAIP ecosystem.
+          </h2>
+
+
+          <p class="text-slate-500 mt-2 max-w-3xl">
+            Monitor connected vehicles, AutoCare AI insights, service centers
+            and maintenance operations from one intelligence layer.
+          </p>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- CORE METRICS -->
+        <!-- ===================================================== -->
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-7">
+
+
+          <!-- VEHICLES -->
+
+          <div class="metric-card glass rounded-2xl p-5">
+
+            <div class="flex items-start justify-between">
+
+              <div
+                class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center"
+              >
+
+                <span class="material-symbols-outlined text-primary">
+                  directions_car
+                </span>
+
+              </div>
+
+
+              <span
+                class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full"
+              >
+                +8.4%
+              </span>
+
+            </div>
+
+
+            <div class="mt-5 text-3xl font-space font-bold">
+              1,482
+            </div>
+
+            <div class="text-xs text-slate-500 mt-1">
+              Active Vehicles
+            </div>
+
+          </div>
+
+
+          <!-- SERVICE CENTERS -->
+
+          <div class="metric-card glass rounded-2xl p-5">
+
+            <div
+              class="w-11 h-11 rounded-xl bg-green-50 flex items-center justify-center"
+            >
+
+              <span class="material-symbols-outlined text-green-600">
+                build
+              </span>
+
+            </div>
+
+
+            <div class="mt-5 text-3xl font-space font-bold">
+              24
+            </div>
+
+            <div class="text-xs text-slate-500 mt-1">
+              Service Centers
+            </div>
+
+          </div>
+
+
+          <!-- WORK ORDERS -->
+
+          <div class="metric-card glass rounded-2xl p-5">
+
+            <div
+              class="w-11 h-11 rounded-xl bg-indigo-50 flex items-center justify-center"
+            >
+
+              <span class="material-symbols-outlined text-indigo-600">
+                assignment
+              </span>
+
+            </div>
+
+
+            <div class="mt-5 text-3xl font-space font-bold">
+              126
+            </div>
+
+            <div class="text-xs text-slate-500 mt-1">
+              Open Work Orders
+            </div>
+
+          </div>
+
+
+          <!-- AI ALERTS -->
+
+          <div class="metric-card glass rounded-2xl p-5">
+
+            <div class="flex items-start justify-between">
+
+              <div
+                class="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center"
+              >
+
+                <span class="material-symbols-outlined text-amber-600">
+                  psychology
+                </span>
+
+              </div>
+
+
+              <span
+                class="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full"
+              >
+                4 CRITICAL
+              </span>
+
+            </div>
+
+
+            <div class="mt-5 text-3xl font-space font-bold">
+              37
+            </div>
+
+            <div class="text-xs text-slate-500 mt-1">
+              Active AI Alerts
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- FLEET HEALTH -->
+        <!-- ===================================================== -->
+
+        <div class="grid lg:grid-cols-3 gap-6 mb-6">
+
+
+          <div class="lg:col-span-2 glass rounded-2xl p-6">
+
+            <div class="flex items-center justify-between mb-6">
+
+              <div>
+
+                <h3 class="font-space font-bold text-lg">
+                  Fleet Health
+                </h3>
+
+                <p class="text-xs text-slate-500 mt-1">
+                  Current health distribution across connected vehicles.
+                </p>
+
+              </div>
+
+
+              <button
+                onclick="showSection('vehicles')"
+                class="text-primary text-xs font-bold hover:underline"
+              >
+                View Fleet
+              </button>
+
+            </div>
+
+
+            <div class="grid sm:grid-cols-3 gap-5">
+
+
+              <!-- GOOD -->
+
+              <div class="p-5 rounded-xl bg-green-50 border border-green-100">
+
+                <div class="flex items-center justify-between">
+
+                  <span class="text-xs font-bold text-green-700">
+                    GOOD
+                  </span>
+
+                  <span class="material-symbols-outlined text-green-600">
+                    check_circle
+                  </span>
+
+                </div>
+
+
+                <div class="text-3xl font-space font-bold text-green-700 mt-4">
+                  82%
+                </div>
+
+                <div class="text-xs text-green-700 mt-1">
+                  1,215 vehicles
+                </div>
+
+              </div>
+
+
+              <!-- ATTENTION -->
+
+              <div class="p-5 rounded-xl bg-amber-50 border border-amber-100">
+
+                <div class="flex items-center justify-between">
+
+                  <span class="text-xs font-bold text-amber-700">
+                    ATTENTION
+                  </span>
+
+                  <span class="material-symbols-outlined text-amber-600">
+                    warning
+                  </span>
+
+                </div>
+
+
+                <div class="text-3xl font-space font-bold text-amber-700 mt-4">
+                  14%
+                </div>
+
+                <div class="text-xs text-amber-700 mt-1">
+                  207 vehicles
+                </div>
+
+              </div>
+
+
+              <!-- CRITICAL -->
+
+              <div class="p-5 rounded-xl bg-red-50 border border-red-100">
+
+                <div class="flex items-center justify-between">
+
+                  <span class="text-xs font-bold text-red-700">
+                    CRITICAL
+                  </span>
+
+                  <span class="material-symbols-outlined text-red-600">
+                    error
+                  </span>
+
+                </div>
+
+
+                <div class="text-3xl font-space font-bold text-red-700 mt-4">
+                  4%
+                </div>
+
+                <div class="text-xs text-red-700 mt-1">
+                  60 vehicles
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- HEALTH BAR -->
+
+            <div class="mt-7">
+
+              <div class="flex h-3 rounded-full overflow-hidden bg-slate-100">
+
+                <div
+                  class="bg-green-500"
+                  style="width:82%"
+                ></div>
+
+                <div
+                  class="bg-amber-400"
+                  style="width:14%"
+                ></div>
+
+                <div
+                  class="bg-red-500"
+                  style="width:4%"
+                ></div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- PLATFORM -->
+
+          <div class="glass rounded-2xl p-6">
+
+            <div class="flex items-center justify-between mb-5">
+
+              <div>
+
+                <h3 class="font-space font-bold text-lg">
+                  Platform Status
+                </h3>
+
+                <p class="text-xs text-slate-500 mt-1">
+                  SAIP system components.
+                </p>
+
+              </div>
+
+              <span class="status-dot bg-green-500"></span>
+
+            </div>
+
+
+            <div class="space-y-4">
+
+
+              <div class="flex items-center justify-between">
+
+                <div class="flex items-center gap-3">
+
+                  <div class="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center">
+
+                    <span class="material-symbols-outlined text-primary text-lg">
+                      psychology
+                    </span>
+
+                  </div>
+
+                  <span class="text-sm font-semibold">
+                    AutoCare AI
+                  </span>
+
+                </div>
+
+                <span class="text-xs font-bold text-green-600">
+                  ONLINE
+                </span>
+
+              </div>
+
+
+              <div class="flex items-center justify-between">
+
+                <div class="flex items-center gap-3">
+
+                  <div class="w-9 h-9 rounded-lg bg-green-50 flex items-center justify-center">
+
+                    <span class="material-symbols-outlined text-green-600 text-lg">
+                      cloud
+                    </span>
+
+                  </div>
+
+                  <span class="text-sm font-semibold">
+                    Cloud Data
+                  </span>
+
+                </div>
+
+                <span class="text-xs font-bold text-green-600">
+                  ONLINE
+                </span>
+
+              </div>
+
+
+              <div class="flex items-center justify-between">
+
+                <div class="flex items-center gap-3">
+
+                  <div class="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center">
+
+                    <span class="material-symbols-outlined text-indigo-600 text-lg">
+                      sensors
+                    </span>
+
+                  </div>
+
+                  <span class="text-sm font-semibold">
+                    Vehicle Gateway
+                  </span>
+
+                </div>
+
+                <span class="text-xs font-bold text-green-600">
+                  ONLINE
+                </span>
+
+              </div>
+
+
+              <div class="flex items-center justify-between">
+
+                <div class="flex items-center gap-3">
+
+                  <div class="w-9 h-9 rounded-lg bg-slate-100 flex items-center justify-center">
+
+                    <span class="material-symbols-outlined text-slate-600 text-lg">
+                      security
+                    </span>
+
+                  </div>
+
+                  <span class="text-sm font-semibold">
+                    Security Layer
+                  </span>
+
+                </div>
+
+                <span class="text-xs font-bold text-green-600">
+                  ACTIVE
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- INTELLIGENCE FEED -->
+        <!-- ===================================================== -->
+
+        <div class="grid lg:grid-cols-3 gap-6">
+
+
+          <div class="lg:col-span-2 glass rounded-2xl overflow-hidden">
+
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+
+              <div>
+
+                <h3 class="font-space font-bold text-lg">
+                  AI Intelligence Feed
+                </h3>
+
+                <p class="text-xs text-slate-500 mt-1">
+                  Recent system-level vehicle intelligence events.
+                </p>
+
+              </div>
+
+              <button
+                onclick="showSection('ai')"
+                class="text-primary text-xs font-bold hover:underline"
+              >
+                Open AI Center
+              </button>
+
+            </div>
+
+
+            <div class="divide-y divide-slate-100">
+
+
+              <!-- EVENT -->
+
+              <div class="p-5 flex gap-4">
+
+                <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
+
+                  <span class="material-symbols-outlined text-amber-600">
+                    warning
+                  </span>
+
+                </div>
+
+                <div class="flex-1">
+
+                  <div class="flex flex-wrap items-center gap-2">
+
+                    <span class="font-bold text-sm">
+                      Maintenance Attention
+                    </span>
+
+                    <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-bold">
+                      AI
+                    </span>
+
+                  </div>
+
+                  <p class="text-xs text-slate-500 mt-1">
+                    SAIP-0427 · Toyota Hybrid · irregular operating pattern detected.
+                  </p>
+
+                  <div class="text-[10px] text-slate-400 mt-2">
+                    12 minutes ago
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- EVENT -->
+
+              <div class="p-5 flex gap-4">
+
+                <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+
+                  <span class="material-symbols-outlined text-green-600">
+                    task_alt
+                  </span>
+
+                </div>
+
+                <div class="flex-1">
+
+                  <div class="flex flex-wrap items-center gap-2">
+
+                    <span class="font-bold text-sm">
+                      Service Action Completed
+                    </span>
+
+                    <span class="text-[10px] bg-green-50 text-green-700 px-2 py-1 rounded-full font-bold">
+                      COMPLETED
+                    </span>
+
+                  </div>
+
+                  <p class="text-xs text-slate-500 mt-1">
+                    SAIP-0294 · HV battery inspection completed by Cairo Smart Auto Center.
+                  </p>
+
+                  <div class="text-[10px] text-slate-400 mt-2">
+                    38 minutes ago
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- EVENT -->
+
+              <div class="p-5 flex gap-4">
+
+                <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+
+                  <span class="material-symbols-outlined text-primary">
+                    directions_car
+                  </span>
+
+                </div>
+
+                <div class="flex-1">
+
+                  <div class="flex flex-wrap items-center gap-2">
+
+                    <span class="font-bold text-sm">
+                      Vehicle Connected
+                    </span>
+
+                    <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-1 rounded-full font-bold">
+                      ONLINE
+                    </span>
+
+                  </div>
+
+                  <p class="text-xs text-slate-500 mt-1">
+                    New vehicle gateway connection established.
+                  </p>
+
+                  <div class="text-[10px] text-slate-400 mt-2">
+                    1 hour ago
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- EVENT -->
+
+              <div class="p-5 flex gap-4">
+
+                <div class="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
+
+                  <span class="material-symbols-outlined text-red-600">
+                    error
+                  </span>
+
+                </div>
+
+                <div class="flex-1">
+
+                  <div class="flex flex-wrap items-center gap-2">
+
+                    <span class="font-bold text-sm">
+                      Critical Diagnostic Alert
+                    </span>
+
+                    <span class="text-[10px] bg-red-50 text-red-700 px-2 py-1 rounded-full font-bold">
+                      HIGH
+                    </span>
+
+                  </div>
+
+                  <p class="text-xs text-slate-500 mt-1">
+                    SAIP-0312 requires service-center diagnostic inspection.
+                  </p>
+
+                  <div class="text-[10px] text-slate-400 mt-2">
+                    2 hours ago
+                  </div>
+
+                </div>
+
+              </div>
+
+
+            </div>
+
+          </div>
+
+
+          <!-- CENTER WORKLOAD -->
+
+          <div class="glass rounded-2xl p-6">
+
+            <div class="mb-5">
+
+              <h3 class="font-space font-bold text-lg">
+                Service Network
+              </h3>
+
+              <p class="text-xs text-slate-500 mt-1">
+                Current workload by center.
+              </p>
+
+            </div>
+
+
+            <div class="space-y-5">
+
+
+              <div>
+
+                <div class="flex justify-between text-xs mb-2">
+
+                  <span class="font-semibold">
+                    Cairo
+                  </span>
+
+                  <span class="text-slate-500">
+                    68%
+                  </span>
+
+                </div>
+
+                <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+
+                  <div
+                    class="h-full bg-primary rounded-full"
+                    style="width:68%"
+                  ></div>
+
+                </div>
+
+              </div>
+
+
+              <div>
+
+                <div class="flex justify-between text-xs mb-2">
+
+                  <span class="font-semibold">
+                    Giza
+                  </span>
+
+                  <span class="text-slate-500">
+                    54%
+                  </span>
+
+                </div>
+
+                <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+
+                  <div
+                    class="h-full bg-green-500 rounded-full"
+                    style="width:54%"
+                  ></div>
+
+                </div>
+
+              </div>
+
+
+              <div>
+
+                <div class="flex justify-between text-xs mb-2">
+
+                  <span class="font-semibold">
+                    Alexandria
+                  </span>
+
+                  <span class="text-slate-500">
+                    41%
+                  </span>
+
+                </div>
+
+                <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+
+                  <div
+                    class="h-full bg-indigo-500 rounded-full"
+                    style="width:41%"
+                  ></div>
+
+                </div>
+
+              </div>
+
+
+              <div>
+
+                <div class="flex justify-between text-xs mb-2">
+
+                  <span class="font-semibold">
+                    Mansoura
+                  </span>
+
+                  <span class="text-slate-500">
+                    29%
+                  </span>
+
+                </div>
+
+                <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+
+                  <div
+                    class="h-full bg-amber-500 rounded-full"
+                    style="width:29%"
+                  ></div>
+
+                </div>
+
+              </div>
+
+
+            </div>
+
+
+            <button
+              onclick="showSection('serviceCenters')"
+              class="w-full mt-6 py-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-xs font-bold"
+            >
+              Manage Service Network
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ======================================================= -->
+      <!-- VEHICLES -->
+      <!-- ======================================================= -->
+
+      <section id="vehicles" class="section">
+
+        <div class="mb-7">
+
+          <div class="text-[10px] uppercase tracking-widest font-bold text-primary mb-2">
+            Fleet Intelligence
+          </div>
+
+          <h2 class="font-space text-3xl font-bold">
+            Connected Vehicle Fleet
+          </h2>
+
+          <p class="text-slate-500 mt-2">
+            Monitor vehicle intelligence across ICE, Hybrid and EV platforms.
+          </p>
+
+        </div>
+
+
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              Total Connected
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-2">
+              1,482
+            </div>
+
+            <div class="text-xs text-green-600 font-semibold mt-1">
+              +8.4% this month
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              Hybrid Vehicles
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-2">
+              612
+            </div>
+
+            <div class="text-xs text-primary font-semibold mt-1">
+              41.3% of fleet
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              Vehicles Requiring Attention
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-2 text-amber-600">
+              267
+            </div>
+
+            <div class="text-xs text-slate-500 mt-1">
+              AI / diagnostic review
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="glass rounded-2xl overflow-hidden">
+
+          <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+
+            <div>
+
+              <h3 class="font-space font-bold text-lg">
+                Vehicle Intelligence
+              </h3>
+
+              <p class="text-xs text-slate-500 mt-1">
+                Sample fleet data for the SAIP MVP.
+              </p>
+
+            </div>
+
+            <button
+              onclick="openVehicleModal()"
+              class="px-4 py-2.5 bg-primary text-white rounded-lg text-xs font-bold"
+            >
+              Add Vehicle
+            </button>
+
+          </div>
+
+
+          <div class="overflow-x-auto">
+
+            <table class="w-full text-left">
+
+              <thead class="bg-slate-50 border-b border-slate-100">
+
+                <tr class="text-[10px] uppercase tracking-wider text-slate-400">
+
+                  <th class="px-6 py-4">
+                    Vehicle
+                  </th>
+
+                  <th class="px-6 py-4">
+                    Type
+                  </th>
+
+                  <th class="px-6 py-4">
+                    Health
+                  </th>
+
+                  <th class="px-6 py-4">
+                    AI Status
+                  </th>
+
+                  <th class="px-6 py-4">
+                    Connection
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+
+                <tr class="table-row border-b border-slate-100">
+
+                  <td class="px-6 py-5">
+
+                    <div class="font-bold text-sm">
+                      SAIP-0427
+                    </div>
+
+                    <div class="text-xs text-slate-400">
+                      Toyota Hybrid
+                    </div>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-bold">
+                      HYBRID
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="font-bold text-green-600">
+                      87
+                    </span>
+                    <span class="text-xs text-slate-400">
+                      /100
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full font-bold">
+                      ATTENTION
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-xs font-bold text-green-600">
+                      ● ONLINE
+                    </span>
+
+                  </td>
+
+                </tr>
+
+
+                <tr class="table-row border-b border-slate-100">
+
+                  <td class="px-6 py-5">
+
+                    <div class="font-bold text-sm">
+                      SAIP-0381
+                    </div>
+
+                    <div class="text-xs text-slate-400">
+                      Toyota Corolla
+                    </div>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold">
+                      ICE
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="font-bold text-green-600">
+                      93
+                    </span>
+                    <span class="text-xs text-slate-400">
+                      /100
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-green-50 text-green-700 px-2.5 py-1 rounded-full font-bold">
+                      NORMAL
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-xs font-bold text-green-600">
+                      ● ONLINE
+                    </span>
+
+                  </td>
+
+                </tr>
+
+
+                <tr class="table-row border-b border-slate-100">
+
+                  <td class="px-6 py-5">
+
+                    <div class="font-bold text-sm">
+                      SAIP-0294
+                    </div>
+
+                    <div class="text-xs text-slate-400">
+                      Hyundai Hybrid
+                    </div>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-bold">
+                      HYBRID
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="font-bold text-green-600">
+                      91
+                    </span>
+                    <span class="text-xs text-slate-400">
+                      /100
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-green-50 text-green-700 px-2.5 py-1 rounded-full font-bold">
+                      NORMAL
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-xs font-bold text-green-600">
+                      ● ONLINE
+                    </span>
+
+                  </td>
+
+                </tr>
+
+
+                <tr class="table-row">
+
+                  <td class="px-6 py-5">
+
+                    <div class="font-bold text-sm">
+                      SAIP-0312
+                    </div>
+
+                    <div class="text-xs text-slate-400">
+                      Nissan Sunny
+                    </div>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold">
+                      ICE
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="font-bold text-red-600">
+                      54
+                    </span>
+                    <span class="text-xs text-slate-400">
+                      /100
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-red-50 text-red-700 px-2.5 py-1 rounded-full font-bold">
+                      CRITICAL
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-xs font-bold text-green-600">
+                      ● ONLINE
+                    </span>
+
+                  </td>
+
+                </tr>
+
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ======================================================= -->
+      <!-- AI CENTER -->
+      <!-- ======================================================= -->
+
+      <section id="ai" class="section">
+
+        <div class="mb-7">
+
+          <div class="text-[10px] uppercase tracking-widest font-bold text-primary mb-2">
+            AutoCare AI
+          </div>
+
+          <h2 class="font-space text-3xl font-bold">
+            AI Intelligence Center
+          </h2>
+
+          <p class="text-slate-500 mt-2 max-w-3xl">
+            Monitor vehicle intelligence signals and how AutoCare AI converts
+            vehicle data into service recommendations.
+          </p>
+
+        </div>
+
+
+        <!-- AI PIPELINE -->
+
+        <div class="glass rounded-2xl p-6 mb-6">
+
+          <div class="flex items-center justify-between mb-6">
+
+            <div>
+
+              <h3 class="font-space font-bold text-lg">
+                Intelligence Pipeline
+              </h3>
+
+              <p class="text-xs text-slate-500 mt-1">
+                Vehicle data → AI analysis → insight → action.
+              </p>
+
+            </div>
+
+            <span class="px-3 py-1 bg-blue-50 text-primary rounded-full text-[10px] font-bold">
+              AI CORE ONLINE
+            </span>
+
+          </div>
+
+
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+
+
+            <div class="p-5 rounded-xl bg-slate-50 border border-slate-100 text-center">
+
+              <span class="material-symbols-outlined text-primary text-3xl">
+                sensors
+              </span>
+
+              <div class="font-bold text-sm mt-3">
+                Vehicle Data
+              </div>
+
+              <div class="text-[10px] text-slate-400 mt-1">
+                OBD / IoT / history
+              </div>
+
+            </div>
+
+
+            <div class="p-5 rounded-xl bg-blue-50 border border-blue-100 text-center">
+
+              <span class="material-symbols-outlined text-primary text-3xl">
+                psychology
+              </span>
+
+              <div class="font-bold text-sm mt-3">
+                AutoCare AI
+              </div>
+
+              <div class="text-[10px] text-slate-400 mt-1">
+                Pattern analysis
+              </div>
+
+            </div>
+
+
+            <div class="p-5 rounded-xl bg-amber-50 border border-amber-100 text-center">
+
+              <span class="material-symbols-outlined text-amber-600 text-3xl">
+                lightbulb
+              </span>
+
+              <div class="font-bold text-sm mt-3">
+                Insight
+              </div>
+
+              <div class="text-[10px] text-slate-400 mt-1">
+                Vehicle condition
+              </div>
+
+            </div>
+
+
+            <div class="p-5 rounded-xl bg-indigo-50 border border-indigo-100 text-center">
+
+              <span class="material-symbols-outlined text-indigo-600 text-3xl">
+                assignment
+              </span>
+
+              <div class="font-bold text-sm mt-3">
+                Action
+              </div>
+
+              <div class="text-[10px] text-slate-400 mt-1">
+                Service workflow
+              </div>
+
+            </div>
+
+
+            <div class="p-5 rounded-xl bg-green-50 border border-green-100 text-center">
+
+              <span class="material-symbols-outlined text-green-600 text-3xl">
+                task_alt
+              </span>
+
+              <div class="font-bold text-sm mt-3">
+                Outcome
+              </div>
+
+              <div class="text-[10px] text-slate-400 mt-1">
+                Maintenance completed
+              </div>
+
+            </div>
+
+
+          </div>
+
+        </div>
+
+
+        <!-- AI METRICS -->
+
+        <div class="grid md:grid-cols-4 gap-4 mb-6">
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              AI Alerts
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-2">
+              37
+            </div>
+
+            <div class="text-xs text-amber-600 font-semibold mt-1">
+              Active
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              AI-assisted Work Orders
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-2">
+              84
+            </div>
+
+            <div class="text-xs text-primary font-semibold mt-1">
+              67% of open orders
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              Patterns Analyzed
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-2">
+              18.4K
+            </div>
+
+            <div class="text-xs text-green-600 font-semibold mt-1">
+              Demo dataset
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              Model Status
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-2 text-green-600">
+              ONLINE
+            </div>
+
+            <div class="text-xs text-slate-500 mt-1">
+              MVP intelligence layer
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- IMPORTANT DEMO DISCLAIMER -->
+
+        <div class="p-5 rounded-2xl bg-blue-50 border border-blue-100">
+
+          <div class="flex gap-3">
+
+            <span class="material-symbols-outlined text-primary">
+              info
+            </span>
+
+            <div>
+
+              <div class="font-bold text-sm">
+                MVP Intelligence Note
+              </div>
+
+              <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                The current MVP demonstrates the complete intelligence workflow
+                using simulated vehicle data. Production deployment would require
+                validated real-world vehicle datasets, model training, testing,
+                monitoring and continuous validation.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ======================================================= -->
+      <!-- SERVICE CENTERS -->
+      <!-- ======================================================= -->
+
+      <section id="serviceCenters" class="section">
+
+        <div class="mb-7">
+
+          <div class="text-[10px] uppercase tracking-widest font-bold text-primary mb-2">
+            Service Network
+          </div>
+
+          <h2 class="font-space text-3xl font-bold">
+            Service Centers
+          </h2>
+
+          <p class="text-slate-500 mt-2">
+            Monitor connected service operations across the SAIP network.
+          </p>
+
+        </div>
+
+
+        <div class="grid md:grid-cols-4 gap-4 mb-6">
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              Total Centers
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-2">
+              24
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              Online
+            </div>
+
+            <div class="text-3xl font-space font-bold text-green-600 mt-2">
+              21
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              Active Technicians
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-2">
+              186
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              Open Work Orders
+            </div>
+
+            <div class="text-3xl font-space font-bold text-primary mt-2">
+              126
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-5">
+
+
+          <!-- CAIRO -->
+
+          <div class="glass rounded-2xl p-6">
+
+            <div class="flex items-start justify-between">
+
+              <div
+                class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center"
+              >
+
+                <span class="material-symbols-outlined text-primary">
+                  location_city
+                </span>
+
+              </div>
+
+              <span class="px-2 py-1 bg-green-50 text-green-700 rounded-full text-[10px] font-bold">
+                ONLINE
+              </span>
+
+            </div>
+
+            <h3 class="font-space font-bold text-lg mt-5">
+              Cairo Smart Auto Center
+            </h3>
+
+            <p class="text-xs text-slate-500 mt-1">
+              Cairo
+            </p>
+
+            <div class="mt-5 space-y-3">
+
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-500">
+                  Workload
+                </span>
+                <span class="font-bold">
+                  68%
+                </span>
+              </div>
+
+              <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+
+                <div
+                  class="h-full bg-primary"
+                  style="width:68%"
+                ></div>
+
+              </div>
+
+              <div class="flex justify-between text-xs">
+
+                <span class="text-slate-500">
+                  Open Orders
+                </span>
+
+                <span class="font-bold">
+                  42
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- GIZA -->
+
+          <div class="glass rounded-2xl p-6">
+
+            <div class="flex items-start justify-between">
+
+              <div
+                class="w-11 h-11 rounded-xl bg-green-50 flex items-center justify-center"
+              >
+
+                <span class="material-symbols-outlined text-green-600">
+                  location_city
+                </span>
+
+              </div>
+
+              <span class="px-2 py-1 bg-green-50 text-green-700 rounded-full text-[10px] font-bold">
+                ONLINE
+              </span>
+
+            </div>
+
+            <h3 class="font-space font-bold text-lg mt-5">
+              Giza Hybrid Care
+            </h3>
+
+            <p class="text-xs text-slate-500 mt-1">
+              Giza
+            </p>
+
+            <div class="mt-5 space-y-3">
+
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-500">
+                  Workload
+                </span>
+                <span class="font-bold">
+                  54%
+                </span>
+              </div>
+
+              <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+
+                <div
+                  class="h-full bg-green-500"
+                  style="width:54%"
+                ></div>
+
+              </div>
+
+              <div class="flex justify-between text-xs">
+
+                <span class="text-slate-500">
+                  Open Orders
+                </span>
+
+                <span class="font-bold">
+                  31
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- ALEX -->
+
+          <div class="glass rounded-2xl p-6">
+
+            <div class="flex items-start justify-between">
+
+              <div
+                class="w-11 h-11 rounded-xl bg-indigo-50 flex items-center justify-center"
+              >
+
+                <span class="material-symbols-outlined text-indigo-600">
+                  location_city
+                </span>
+
+              </div>
+
+              <span class="px-2 py-1 bg-green-50 text-green-700 rounded-full text-[10px] font-bold">
+                ONLINE
+              </span>
+
+            </div>
+
+            <h3 class="font-space font-bold text-lg mt-5">
+              Alexandria Auto Intelligence
+            </h3>
+
+            <p class="text-xs text-slate-500 mt-1">
+              Alexandria
+            </p>
+
+            <div class="mt-5 space-y-3">
+
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-500">
+                  Workload
+                </span>
+                <span class="font-bold">
+                  41%
+                </span>
+              </div>
+
+              <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+
+                <div
+                  class="h-full bg-indigo-500"
+                  style="width:41%"
+                ></div>
+
+              </div>
+
+              <div class="flex justify-between text-xs">
+
+                <span class="text-slate-500">
+                  Open Orders
+                </span>
+
+                <span class="font-bold">
+                  22
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- MANSOURA -->
+
+          <div class="glass rounded-2xl p-6">
+
+            <div class="flex items-start justify-between">
+
+              <div
+                class="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center"
+              >
+
+                <span class="material-symbols-outlined text-amber-600">
+                  location_city
+                </span>
+
+              </div>
+
+              <span class="px-2 py-1 bg-amber-50 text-amber-700 rounded-full text-[10px] font-bold">
+                BUSY
+              </span>
+
+            </div>
+
+            <h3 class="font-space font-bold text-lg mt-5">
+              Mansoura Mobility Center
+            </h3>
+
+            <p class="text-xs text-slate-500 mt-1">
+              Mansoura
+            </p>
+
+            <div class="mt-5 space-y-3">
+
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-500">
+                  Workload
+                </span>
+                <span class="font-bold">
+                  29%
+                </span>
+              </div>
+
+              <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+
+                <div
+                  class="h-full bg-amber-500"
+                  style="width:29%"
+                ></div>
+
+              </div>
+
+              <div class="flex justify-between text-xs">
+
+                <span class="text-slate-500">
+                  Open Orders
+                </span>
+
+                <span class="font-bold">
+                  14
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+        </div>
+
+      </section>
+
+
+      <!-- ======================================================= -->
+      <!-- WORK ORDERS -->
+      <!-- ======================================================= -->
+
+      <section id="workorders" class="section">
+
+        <div class="mb-7">
+
+          <div class="text-[10px] uppercase tracking-widest font-bold text-primary mb-2">
+            Service Operations
+          </div>
+
+          <h2 class="font-space text-3xl font-bold">
+            Work Order Intelligence
+          </h2>
+
+          <p class="text-slate-500 mt-2">
+            Track how vehicle intelligence becomes service-center action.
+          </p>
+
+        </div>
+
+
+        <div class="grid md:grid-cols-4 gap-4 mb-6">
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              Open
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-2">
+              126
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              Diagnosing
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-2 text-amber-600">
+              34
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              In Progress
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-2 text-primary">
+              58
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              Completed Today
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-2 text-green-600">
+              71
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="glass rounded-2xl overflow-hidden">
+
+          <div class="overflow-x-auto">
+
+            <table class="w-full text-left">
+
+              <thead class="bg-slate-50 border-b border-slate-100">
+
+                <tr class="text-[10px] uppercase tracking-wider text-slate-400">
+
+                  <th class="px-6 py-4">
+                    Work Order
+                  </th>
+
+                  <th class="px-6 py-4">
+                    Vehicle
+                  </th>
+
+                  <th class="px-6 py-4">
+                    Source
+                  </th>
+
+                  <th class="px-6 py-4">
+                    Center
+                  </th>
+
+                  <th class="px-6 py-4">
+                    Status
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+
+                <tr class="table-row border-b border-slate-100">
+
+                  <td class="px-6 py-5">
+
+                    <div class="font-bold">
+                      WO-2047
+                    </div>
+
+                    <div class="text-[10px] text-slate-400">
+                      05 Sep 2026
+                    </div>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <div class="font-bold text-sm">
+                      SAIP-0427
+                    </div>
+
+                    <div class="text-xs text-slate-400">
+                      Toyota Hybrid
+                    </div>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-bold">
+                      AUTOCARE AI
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5 text-sm">
+                    Cairo Smart Auto Center
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-bold">
+                      IN PROGRESS
+                    </span>
+
+                  </td>
+
+                </tr>
+
+
+                <tr class="table-row border-b border-slate-100">
+
+                  <td class="px-6 py-5">
+
+                    <div class="font-bold">
+                      WO-2046
+                    </div>
+
+                    <div class="text-[10px] text-slate-400">
+                      05 Sep 2026
+                    </div>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <div class="font-bold text-sm">
+                      SAIP-0381
+                    </div>
+
+                    <div class="text-xs text-slate-400">
+                      Toyota Corolla
+                    </div>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold">
+                      DIAGNOSTIC
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5 text-sm">
+                    Giza Hybrid Care
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-amber-50 text-amber-700 px-2.5 py-1 rounded-full font-bold">
+                      DIAGNOSING
+                    </span>
+
+                  </td>
+
+                </tr>
+
+
+                <tr class="table-row">
+
+                  <td class="px-6 py-5">
+
+                    <div class="font-bold">
+                      WO-2045
+                    </div>
+
+                    <div class="text-[10px] text-slate-400">
+                      04 Sep 2026
+                    </div>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <div class="font-bold text-sm">
+                      SAIP-0294
+                    </div>
+
+                    <div class="text-xs text-slate-400">
+                      Hyundai Hybrid
+                    </div>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-bold">
+                      AUTOCARE AI
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5 text-sm">
+                    Cairo Smart Auto Center
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-green-50 text-green-700 px-2.5 py-1 rounded-full font-bold">
+                      COMPLETED
+                    </span>
+
+                  </td>
+
+                </tr>
+
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ======================================================= -->
+      <!-- ANALYTICS -->
+      <!-- ======================================================= -->
+
+      <section id="analytics" class="section">
+
+        <div class="mb-7">
+
+          <div class="text-[10px] uppercase tracking-widest font-bold text-primary mb-2">
+            Platform Analytics
+          </div>
+
+          <h2 class="font-space text-3xl font-bold">
+            SAIP Analytics
+          </h2>
+
+          <p class="text-slate-500 mt-2">
+            System-level indicators for fleet intelligence and service operations.
+          </p>
+
+        </div>
+
+
+        <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+
+          <div class="glass rounded-2xl p-6">
+
+            <div class="text-xs text-slate-500">
+              AI Alert → Work Order
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-3">
+              81%
+            </div>
+
+            <div class="text-xs text-green-600 font-semibold mt-2">
+              Conversion
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-6">
+
+            <div class="text-xs text-slate-500">
+              Avg. Diagnosis Time
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-3">
+              34 min
+            </div>
+
+            <div class="text-xs text-green-600 font-semibold mt-2">
+              -12% demo trend
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-6">
+
+            <div class="text-xs text-slate-500">
+              AI-assisted Services
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-3">
+              67%
+            </div>
+
+            <div class="text-xs text-primary font-semibold mt-2">
+              Current workload
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-6">
+
+            <div class="text-xs text-slate-500">
+              Completed Services
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-3">
+              1,842
+            </div>
+
+            <div class="text-xs text-green-600 font-semibold mt-2">
+              Demo period
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- SERVICE FLOW -->
+
+        <div class="glass rounded-2xl p-6">
+
+          <div class="mb-6">
+
+            <h3 class="font-space font-bold text-lg">
+              Intelligence-to-Action Performance
+            </h3>
+
+            <p class="text-xs text-slate-500 mt-1">
+              Demonstration of the complete SAIP service loop.
+            </p>
+
+          </div>
+
+
+          <div class="grid md:grid-cols-4 gap-4">
+
+
+            <div class="p-5 rounded-xl bg-blue-50 border border-blue-100">
+
+              <div class="text-[10px] uppercase font-bold text-blue-600">
+                Detected
+              </div>
+
+              <div class="text-3xl font-space font-bold mt-2">
+                37
+              </div>
+
+              <div class="text-xs text-slate-500 mt-1">
+                AI alerts
+              </div>
+
+            </div>
+
+
+            <div class="p-5 rounded-xl bg-amber-50 border border-amber-100">
+
+              <div class="text-[10px] uppercase font-bold text-amber-600">
+                Diagnosed
+              </div>
+
+              <div class="text-3xl font-space font-bold mt-2">
+                31
+              </div>
+
+              <div class="text-xs text-slate-500 mt-1">
+                reviewed cases
+              </div>
+
+            </div>
+
+
+            <div class="p-5 rounded-xl bg-indigo-50 border border-indigo-100">
+
+              <div class="text-[10px] uppercase font-bold text-indigo-600">
+                Actioned
+              </div>
+
+              <div class="text-3xl font-space font-bold mt-2">
+                28
+              </div>
+
+              <div class="text-xs text-slate-500 mt-1">
+                work orders
+              </div>
+
+            </div>
+
+
+            <div class="p-5 rounded-xl bg-green-50 border border-green-100">
+
+              <div class="text-[10px] uppercase font-bold text-green-600">
+                Completed
+              </div>
+
+              <div class="text-3xl font-space font-bold mt-2">
+                24
+              </div>
+
+              <div class="text-xs text-slate-500 mt-1">
+                service outcomes
+              </div>
+
+            </div>
+
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ======================================================= -->
+      <!-- USERS -->
+      <!-- ======================================================= -->
+
+      <section id="users" class="section">
+
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-7">
+
+          <div>
+
+            <div class="text-[10px] uppercase tracking-widest font-bold text-primary mb-2">
+              Access Management
+            </div>
+
+            <h2 class="font-space text-3xl font-bold">
+              Users & Roles
+            </h2>
+
+            <p class="text-slate-500 mt-2">
+              Manage access across the SAIP ecosystem.
+            </p>
+
+          </div>
+
+
+          <button
+            onclick="openUserModal()"
+            class="px-5 py-3 bg-primary text-white rounded-xl text-sm font-bold flex items-center gap-2"
+          >
+
+            <span class="material-symbols-outlined">
+              person_add
+            </span>
+
+            Add User
+
+          </button>
+
+        </div>
+
+
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              Customers
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-2">
+              1,482
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              Service Center Users
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-2">
+              214
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-5">
+
+            <div class="text-xs text-slate-500">
+              Administrators
+            </div>
+
+            <div class="text-3xl font-space font-bold mt-2">
+              8
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="glass rounded-2xl overflow-hidden">
+
+          <div class="overflow-x-auto">
+
+            <table class="w-full text-left">
+
+              <thead class="bg-slate-50 border-b border-slate-100">
+
+                <tr class="text-[10px] uppercase tracking-wider text-slate-400">
+
+                  <th class="px-6 py-4">
+                    User
+                  </th>
+
+                  <th class="px-6 py-4">
+                    Role
+                  </th>
+
+                  <th class="px-6 py-4">
+                    Organization
+                  </th>
+
+                  <th class="px-6 py-4">
+                    Status
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody>
+
+
+                <tr class="table-row border-b border-slate-100">
+
+                  <td class="px-6 py-5">
+
+                    <div class="font-bold text-sm">
+                      Mahmoud
+                    </div>
+
+                    <div class="text-xs text-slate-400">
+                      customer@demo
+                    </div>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full font-bold">
+                      CUSTOMER
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5 text-sm">
+                    Vehicle Owner
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-green-50 text-green-700 px-2.5 py-1 rounded-full font-bold">
+                      ACTIVE
+                    </span>
+
+                  </td>
+
+                </tr>
+
+
+                <tr class="table-row border-b border-slate-100">
+
+                  <td class="px-6 py-5">
+
+                    <div class="font-bold text-sm">
+                      Service Manager
+                    </div>
+
+                    <div class="text-xs text-slate-400">
+                      service@demo
+                    </div>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-green-50 text-green-700 px-2.5 py-1 rounded-full font-bold">
+                      SERVICE
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5 text-sm">
+                    Cairo Smart Auto Center
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-green-50 text-green-700 px-2.5 py-1 rounded-full font-bold">
+                      ACTIVE
+                    </span>
+
+                  </td>
+
+                </tr>
+
+
+                <tr class="table-row">
+
+                  <td class="px-6 py-5">
+
+                    <div class="font-bold text-sm">
+                      SAIP Administrator
+                    </div>
+
+                    <div class="text-xs text-slate-400">
+                      admin@demo
+                    </div>
+
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full font-bold">
+                      ADMIN
+                    </span>
+
+                  </td>
+
+                  <td class="px-6 py-5 text-sm">
+                    SAIP Platform
+                  </td>
+
+                  <td class="px-6 py-5">
+
+                    <span class="text-[10px] bg-green-50 text-green-700 px-2.5 py-1 rounded-full font-bold">
+                      ACTIVE
+                    </span>
+
+                  </td>
+
+                </tr>
+
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ======================================================= -->
+      <!-- SYSTEM -->
+      <!-- ======================================================= -->
+
+      <section id="system" class="section">
+
+        <div class="mb-7">
+
+          <div class="text-[10px] uppercase tracking-widest font-bold text-primary mb-2">
+            Infrastructure
+          </div>
+
+          <h2 class="font-space text-3xl font-bold">
+            System Monitor
+          </h2>
+
+          <p class="text-slate-500 mt-2">
+            High-level health of the SAIP platform components.
+          </p>
+
+        </div>
+
+
+        <div class="grid md:grid-cols-2 gap-5">
+
+
+          <div class="glass rounded-2xl p-6">
+
+            <div class="flex items-center justify-between">
+
+              <div class="flex items-center gap-3">
+
+                <div class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center">
+
+                  <span class="material-symbols-outlined text-primary">
+                    cloud
+                  </span>
+
+                </div>
+
+                <div>
+
+                  <div class="font-bold">
+                    Cloud Infrastructure
+                  </div>
+
+                  <div class="text-xs text-slate-500">
+                    Data services
+                  </div>
+
+                </div>
+
+              </div>
+
+              <span class="text-xs font-bold text-green-600">
+                HEALTHY
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-6">
+
+            <div class="flex items-center justify-between">
+
+              <div class="flex items-center gap-3">
+
+                <div class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center">
+
+                  <span class="material-symbols-outlined text-primary">
+                    psychology
+                  </span>
+
+                </div>
+
+                <div>
+
+                  <div class="font-bold">
+                    AutoCare AI
+                  </div>
+
+                  <div class="text-xs text-slate-500">
+                    Intelligence engine
+                  </div>
+
+                </div>
+
+              </div>
+
+              <span class="text-xs font-bold text-green-600">
+                ONLINE
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-6">
+
+            <div class="flex items-center justify-between">
+
+              <div class="flex items-center gap-3">
+
+                <div class="w-11 h-11 rounded-xl bg-green-50 flex items-center justify-center">
+
+                  <span class="material-symbols-outlined text-green-600">
+                    sensors
+                  </span>
+
+                </div>
+
+                <div>
+
+                  <div class="font-bold">
+                    Vehicle Connectivity
+                  </div>
+
+                  <div class="text-xs text-slate-500">
+                    OBD / IoT gateway
+                  </div>
+
+                </div>
+
+              </div>
+
+              <span class="text-xs font-bold text-green-600">
+                ACTIVE
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-6">
+
+            <div class="flex items-center justify-between">
+
+              <div class="flex items-center gap-3">
+
+                <div class="w-11 h-11 rounded-xl bg-slate-100 flex items-center justify-center">
+
+                  <span class="material-symbols-outlined text-slate-600">
+                    security
+                  </span>
+
+                </div>
+
+                <div>
+
+                  <div class="font-bold">
+                    Security Layer
+                  </div>
+
+                  <div class="text-xs text-slate-500">
+                    Authentication & access
+                  </div>
+
+                </div>
+
+              </div>
+
+              <span class="text-xs font-bold text-green-600">
+                ACTIVE
+              </span>
+
+            </div>
+
+          </div>
+
+
+        </div>
+
+
+        <div class="glass rounded-2xl p-6 mt-6">
+
+          <div class="flex gap-3">
+
+            <span class="material-symbols-outlined text-primary">
+              info
+            </span>
+
+            <div>
+
+              <div class="font-bold text-sm">
+                Prototype Environment
+              </div>
+
+              <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                This administrator dashboard is an MVP visualization of the
+                future SAIP control layer. Production deployment would connect
+                these panels to authenticated backend services, live vehicle
+                gateways, validated AI models and real service-center data.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+    </div>
+
+  </main>
+
+
+  <!-- ========================================================= -->
+  <!-- ADD VEHICLE MODAL -->
+  <!-- ========================================================= -->
+
+  <div
+    id="vehicleModal"
+    class="hidden fixed inset-0 z-[100] modal-backdrop items-center justify-center p-4"
+  >
+
+    <div class="modal bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+
+      <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+
+        <div>
+
+          <div class="text-[10px] uppercase tracking-widest text-primary font-bold">
+            Fleet Management
+          </div>
+
+          <h3 class="font-space text-xl font-bold mt-1">
+            Add Vehicle
+          </h3>
+
+        </div>
+
+
+        <button
+          onclick="closeVehicleModal()"
+          class="w-9 h-9 rounded-lg hover:bg-slate-100 flex items-center justify-center"
+        >
+
+          <span class="material-symbols-outlined">
+            close
+          </span>
+
+        </button>
+
+      </div>
+
+
+      <form
+        onsubmit="addVehicle(event)"
+        class="p-6"
+      >
+
+        <div class="space-y-4">
+
+
+          <div>
+
+            <label class="block text-xs font-bold text-slate-600 mb-2">
+              Vehicle ID
+            </label>
+
+            <input
+              required
+              type="text"
+              placeholder="SAIP-0501"
+              class="w-full px-4 py-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary"
+            />
+
+          </div>
+
+
+          <div>
+
+            <label class="block text-xs font-bold text-slate-600 mb-2">
+              Vehicle Type
+            </label>
+
+            <select
+              class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-white outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary"
+            >
+
+              <option>Hybrid</option>
+              <option>ICE</option>
+              <option>EV</option>
+
+            </select>
+
+          </div>
+
+
+          <div>
+
+            <label class="block text-xs font-bold text-slate-600 mb-2">
+              Model
+            </label>
+
+            <input
+              required
+              type="text"
+              placeholder="Toyota Hybrid"
+              class="w-full px-4 py-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary"
+            />
+
+          </div>
+
+
+        </div>
+
+
+        <div class="flex justify-end gap-3 mt-6">
+
+          <button
+            type="button"
+            onclick="closeVehicleModal()"
+            class="px-4 py-2.5 border border-slate-200 rounded-lg text-sm font-semibold"
+          >
+            Cancel
+          </button>
+
+
+          <button
+            type="submit"
+            class="px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-bold"
+          >
+            Add Vehicle
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- ========================================================= -->
+  <!-- ADD USER MODAL -->
+  <!-- ========================================================= -->
+
+  <div
+    id="userModal"
+    class="hidden fixed inset-0 z-[100] modal-backdrop items-center justify-center p-4"
+  >
+
+    <div class="modal bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+
+      <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+
+        <div>
+
+          <div class="text-[10px] uppercase tracking-widest text-primary font-bold">
+            Access Management
+          </div>
+
+          <h3 class="font-space text-xl font-bold mt-1">
+            Add User
+          </h3>
+
+        </div>
+
+
+        <button
+          onclick="closeUserModal()"
+          class="w-9 h-9 rounded-lg hover:bg-slate-100 flex items-center justify-center"
+        >
+
+          <span class="material-symbols-outlined">
+            close
+          </span>
+
+        </button>
+
+      </div>
+
+
+      <form
+        onsubmit="addUser(event)"
+        class="p-6"
+      >
+
+        <div class="space-y-4">
+
+
+          <div>
+
+            <label class="block text-xs font-bold text-slate-600 mb-2">
+              Name
+            </label>
+
+            <input
+              required
+              type="text"
+              placeholder="User name"
+              class="w-full px-4 py-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary"
+            />
+
+          </div>
+
+
+          <div>
+
+            <label class="block text-xs font-bold text-slate-600 mb-2">
+              Role
+            </label>
+
+            <select
+              class="w-full px-4 py-3 rounded-lg border border-slate-200 bg-white outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary"
+            >
+
+              <option>Customer</option>
+              <option>Service Center</option>
+              <option>Administrator</option>
+
+            </select>
+
+          </div>
+
+
+          <div>
+
+            <label class="block text-xs font-bold text-slate-600 mb-2">
+              Email
+            </label>
+
+            <input
+              required
+              type="email"
+              placeholder="user@example.com"
+              class="w-full px-4 py-3 rounded-lg border border-slate-200 outline-none focus:ring-2 focus:ring-blue-100 focus:border-primary"
+            />
+
+          </div>
+
+
+        </div>
+
+
+        <div class="flex justify-end gap-3 mt-6">
+
+          <button
+            type="button"
+            onclick="closeUserModal()"
+            class="px-4 py-2.5 border border-slate-200 rounded-lg text-sm font-semibold"
+          >
+            Cancel
+          </button>
+
+
+          <button
+            type="submit"
+            class="px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-bold"
+          >
+            Create User
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+  <!-- ========================================================= -->
+  <!-- JAVASCRIPT -->
+  <!-- ========================================================= -->
+
+  <script>
+
+    /* ========================================================= */
+    /* AUTH */
+    /* ========================================================= */
+
+    const loggedIn =
+      localStorage.getItem("saip_logged_in");
+
+    const role =
+      localStorage.getItem("saip_role");
+
+    /*
+      Strict authentication can be enabled later:
+
+      if (!loggedIn || role !== "admin") {
+        window.location.href = "index.html";
+      }
+    */
+
+
+    /* ========================================================= */
+    /* SIDEBAR */
+    /* ========================================================= */
+
+    function toggleSidebar() {
+
+      const sidebar =
+        document.getElementById("sidebar");
+
+      const overlay =
+        document.getElementById("mobileOverlay");
+
+      sidebar.classList.toggle("open");
+
+      if (sidebar.classList.contains("open")) {
+
+        overlay.classList.remove("hidden");
+
+      } else {
+
+        overlay.classList.add("hidden");
+
+      }
+
+    }
+
+
+    /* ========================================================= */
+    /* SECTION NAVIGATION */
+    /* ========================================================= */
+
+    function showSection(
+      sectionId,
+      clickedElement = null
+    ) {
+
+      document
+        .querySelectorAll(".section")
+        .forEach(section => {
+
+          section.classList.remove("active");
+
+        });
+
+
+      const target =
+        document.getElementById(sectionId);
+
+      if (target) {
+
+        target.classList.add("active");
+
+      }
+
+
+      document
+        .querySelectorAll(".nav-item")
+        .forEach(item => {
+
+          item.classList.remove("active");
+
+        });
+
+
+      if (clickedElement) {
+
+        clickedElement.classList.add("active");
+
+      } else {
+
+        document
+          .querySelectorAll(".nav-item")
+          .forEach(item => {
+
+            const text =
+              item.textContent
+                .trim()
+                .toLowerCase();
+
+
+            if (
+              (sectionId === "overview" &&
+                text.includes("overview")) ||
+
+              (sectionId === "vehicles" &&
+                text.includes("vehicles")) ||
+
+              (sectionId === "ai" &&
+                text.includes("autocare ai")) ||
+
+              (sectionId === "serviceCenters" &&
+                text.includes("service centers")) ||
+
+              (sectionId === "workorders" &&
+                text.includes("work orders")) ||
+
+              (sectionId === "analytics" &&
+                text.includes("analytics")) ||
+
+              (sectionId === "users" &&
+                text.includes("users")) ||
+
+              (sectionId === "system" &&
+                text.includes("system monitor"))
+            ) {
+
+              item.classList.add("active");
+
+            }
+
+          });
+
+      }
+
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+
+      if (window.innerWidth < 1024) {
+
+        const sidebar =
+          document.getElementById("sidebar");
+
+        const overlay =
+          document.getElementById("mobileOverlay");
+
+        sidebar.classList.remove("open");
+
+        overlay.classList.add("hidden");
+
+      }
+
+    }
+
+
+    /* ========================================================= */
+    /* VEHICLE MODAL */
+    /* ========================================================= */
+
+    function openVehicleModal() {
+
+      const modal =
+        document.getElementById("vehicleModal");
+
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+
+    }
+
+
+    function closeVehicleModal() {
+
+      const modal =
+        document.getElementById("vehicleModal");
+
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+
+    }
+
+
+    function addVehicle(event) {
+
+      event.preventDefault();
+
+      closeVehicleModal();
+
+      alert(
+        "Vehicle added to the SAIP fleet.\n\nDemo action completed."
+      );
+
+    }
+
+
+    /* ========================================================= */
+    /* USER MODAL */
+    /* ========================================================= */
+
+    function openUserModal() {
+
+      const modal =
+        document.getElementById("userModal");
+
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+
+    }
+
+
+    function closeUserModal() {
+
+      const modal =
+        document.getElementById("userModal");
+
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+
+    }
+
+
+    function addUser(event) {
+
+      event.preventDefault();
+
+      closeUserModal();
+
+      alert(
+        "User created successfully.\n\nDemo action completed."
+      );
+
+    }
+
+
+    /* ========================================================= */
+    /* LOGOUT */
+    /* ========================================================= */
+
+    function logout() {
+
+      localStorage.removeItem("saip_logged_in");
+      localStorage.removeItem("saip_role");
+
+      window.location.href = "index.html";
+
+    }
+
+
+    /* ========================================================= */
+    /* ESCAPE */
+    /* ========================================================= */
+
+    document.addEventListener(
+      "keydown",
+      function(event) {
+
+        if (event.key !== "Escape") {
+          return;
+        }
+
+        closeVehicleModal();
+        closeUserModal();
+
+      }
+    );
+
+
+    /* ========================================================= */
+    /* OUTSIDE CLICK */
+    /* ========================================================= */
+
+    document.addEventListener(
+      "click",
+      function(event) {
+
+        const vehicleModal =
+          document.getElementById("vehicleModal");
+
+        const userModal =
+          document.getElementById("userModal");
+
+
+        if (event.target === vehicleModal) {
+
+          closeVehicleModal();
+
+        }
+
+
+        if (event.target === userModal) {
+
+          closeUserModal();
+
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
